@@ -301,6 +301,46 @@ form.addEventListener('submit', async e => {
   <button>Envoyer</button>
 </form>
 
+
+<script>
+document.getElementById('y').textContent = new Date().getFullYear();
+
+// apparition au scroll
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), {threshold:.15});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// envoi de l'idée
+const form = document.getElementById('ideaForm'), st = document.getElementById('status'), btn = document.getElementById('send');
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  if (form._honey && form._honey.value) return;
+  btn.disabled = true; btn.textContent = 'Envoi…'; st.className = 'status'; st.textContent = '';
+
+  const data = new FormData();
+  data.append('_subject', 'Nouvelle idée de logiciel — SoftKale');
+  data.append('_template', 'table');
+  data.append('_captcha', 'false');
+  data.append('email', form.email.value);
+  data.append('idee', form.idee.value);
+
+  try {
+    await fetch('https://formsubmit.co/gabrielstadelmann135@gmail.com', {
+      method: 'POST',
+      mode: 'no-cors',
+      body: data
+    });
+    form.reset();
+    st.className = 'status ok';
+    st.textContent = 'Merci, votre idée a bien été envoyée. Nous revenons vers vous très vite.';
+  } catch (err) {
+    const body = encodeURIComponent('Mon idée :\n' + form.idee.value + '\n\nMon email : ' + form.email.value);
+    st.innerHTML = "L'envoi automatique a échoué. <a href=\"mailto:gabrielstadelmann135@gmail.com?subject=Nouvelle%20id%C3%A9e%20de%20logiciel&body=" + body + "\" style=\"color:#0a0a0a;text-decoration:underline\">Cliquez ici pour l'envoyer par email</a>.";
+  }
+  btn.disabled = false; btn.textContent = 'Envoyer mon idée';
+});
+</script>
+
+
   
 </body>
 </html>
